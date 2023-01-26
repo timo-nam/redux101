@@ -1,40 +1,52 @@
 import { legacy_createStore } from "redux";
 
-const add = document.getElementById("add");
-const minus = document.getElementById("minus");
-const number = document.querySelector("span");
+const form = document.querySelector("form");
+const input = document.querySelector("input");
+const ul = document.querySelector("ul");
 
-number.innerText = 0;
+const ADD_TODO = "ADD_TODO";
+const DELETE_TODO = "DELETE_TODO";
 
-const ADD = "ADD";
-const MINUS = "MINUS";
-
-const countModifier = (count = 0, action) => {
+const reducer = (state = [], action) => {
   switch (action.type) {
-    case ADD:
-      return count + 1;
-    case MINUS:
-      return count - 1;
+    case ADD_TODO:
+      return [{ text: action.text, id: Date.now() }, ...state];
+    case DELETE_TODO:
+      return [];
     default:
-      return count;
+      return state;
   }
 };
 
-const countStore = legacy_createStore(countModifier);
+const store = legacy_createStore(reducer);
 
-const onChange = () => {
-  number.innerText = countStore.getState();
+const paintToDos = () => {
+  const toDos = store.getState();
+
+  ul.innerHTML = "";
+
+  toDos.forEach((toDo) => {
+    const li = document.createElement("li");
+    li.id = toDo.id;
+    li.innerText = toDo.text;
+
+    ul.appendChild(li);
+  });
 };
 
-countStore.subscribe(onChange);
+store.subscribe(paintToDos);
 
-const handleAdd = () => {
-  countStore.dispatch({ type: ADD } )
+const addToDo = (text) => {
+  store.dispatch({ type: ADD_TODO, text });
 };
 
-const handleMinus = () => {
-  countStore.dispatch({ type: MINUS } )
+const onSubmit = (e) => {
+  e.preventDefault();
+
+  const toDo = input.value;
+  input.value = "";
+
+  addToDo(toDo);
 };
 
-add.addEventListener("click", handleAdd);
-minus.addEventListener("click", handleMinus);
+form.addEventListener("submit", onSubmit);
