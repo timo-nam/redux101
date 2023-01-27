@@ -20,7 +20,7 @@ const deleteToDo = (id) => {
 const reducer = (state = [], action) => {
   switch (action.type) {
     case ADD:
-      return [{ type: action.text, id: Date.now() }, ...state];
+      return [{ text: action.text, id: Date.now() }, ...state];
     case DELETE:
       return state.filter((toDo) => toDo.id !== action.id);
     default:
@@ -29,5 +29,10 @@ const reducer = (state = [], action) => {
 };
 
 const store = legacy_createStore(reducer);
+
+export const actoinCreators = {
+  addToDo,
+  deleteToDo,
+};
 
 export default store;
